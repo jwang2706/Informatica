@@ -1,13 +1,11 @@
-
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 
-public class Manager extends Dipendente{
-    private ArrayList<Programmatore> sviluppatore;
+public class Programmatore extends Dipendente{
+    private ArrayList<String> linguaggi;
     
-    public Manager(String codice, String nome, String cognome, LocalDate dataAssunzione, double stipendioBase){
+    public Programmatore(String codice, String nome, String cognome, LocalDate dataAssunzione, double stipendioBase){
         super(codice, nome, cognome, dataAssunzione, stipendioBase);
     }
     
