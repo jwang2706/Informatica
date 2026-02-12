@@ -2,7 +2,10 @@
 
 import java.time.LocalDate;
 
-public class Dipendente {
+
+
+
+public abstract class Dipendente {
     protected String codice;
     protected String nome;
     protected String cognome;
@@ -17,7 +20,25 @@ public class Dipendente {
         this.stipendioBase = stipendioBase;
     }
     
-    public double calcolaStipendio(){
-        return 0;
+    public abstract double calcolaStipendio();
+    
+    public String getCodice(){
+        return codice;
+    }
+    
+    public String getNome(){
+        return nome;
+    }
+    
+    public String getCognome(){
+        return cognome;
+    }
+    
+    public LocalDate getDataAssunzione(){
+        return dataAssunzione;
+    }
+    
+    public double getStipendioBase(){
+        return stipendioBase;
     }
 }
