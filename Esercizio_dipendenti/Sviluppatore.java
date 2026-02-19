@@ -1,40 +1,35 @@
-mport java.time.Period;
+
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class Manager extends Dipendente{
+public class Sviluppatore extends Dipendente{
     // Attributi
-    private ArrayList<Sviluppatore> listaSviluppatori;
+    private ArrayList<String> listaLinguaggi;
     private static double percentualeAnzianita;
-    private static double contributoSviluppatore;
     // Costruttore
-    public Manager(String codice, String nome, String cognome, LocalDate dataAssunzione, double stipendioBase){
+    public Sviluppatore(String codice, String nome, String cognome, LocalDate dataAssunzione, double stipendioBase){
         super(codice, nome, cognome, dataAssunzione, stipendioBase);
-        listaSviluppatori = new ArrayList<Sviluppatore>();
+        listaLinguaggi = new ArrayList<String>();
     }
     // Metodi setter e getter
     public static double getPercentualeAnzinita() {
         return percentualeAnzianita;
     }
-    public static double getContributoSviluppatore(){
-        return contributoSviluppatore;
-    }
     public static void setPercentualeAnzinita(double percentualeAnzinita) {
-        Manager.percentualeAnzianita = percentualeAnzinita;
+        Sviluppatore.percentualeAnzianita = percentualeAnzinita;
     } 
-    public static void setContributoSviluppatore(double contributoSviluppatore){
-       Manager.contributoSviluppatore = contributoSviluppatore;  
-    }
     // Metodi richiesti
-    public void addDiretto(Sviluppatore s){
-        listaSviluppatori.add(s);
+    public void addLinguaggio(String l){
+        listaLinguaggi.add(l);
     }
     @Override
     public double stipendio(){
         LocalDate oggi = LocalDate.now();
         Period anzianita = Period.between(dataAssunzione, oggi);
-        double percentuale = percentualeAnzianita * anzianita.getYears()/4;
-        return stipendioBase * (1+percentuale/100) + contributoSviluppatore * listaSviluppatori.size();
+        double percentuale = percentualeAnzianita * anzianita.getYears()/5;
+        return stipendioBase * (1+percentuale/100);
     }
     @Override
     public String toString(){
@@ -42,12 +37,11 @@ public class Manager extends Dipendente{
         LocalDate oggi = LocalDate.now();
         Period anzianita = Period.between(dataAssunzione, oggi);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        s = "MANAGER: " + codice;
+        s = "SVILUPPATORE: " + codice;
         s += " - Nominativo: " + nome + " " + cognome;
         s += " - Data di assunzione: " + dataAssunzione.format(formatter);
         s += "(Anzianita: " + anzianita.getYears() + ")";
         s += " - Stipendio base: " + stipendioBase + " â¬";
-        s += " - Numero di sviluppatori diretti: " + listaSviluppatori.size();
-        return s;
+        return s;    
     }
 }

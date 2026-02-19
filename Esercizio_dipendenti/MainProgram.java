@@ -1,208 +1,260 @@
 
-
-import java.util.Scanner;
-import java.util.ArrayList;
 import java.time.LocalDate;
-
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Iterator;
+import java.util.Scanner;
 
 public class MainProgram {
-
-    private static ArrayList<Dipendente> dipendenti = new ArrayList<>();
-    
-    public static void main(String[] args) {
+    // Attributi
+    private static Azienda a;
+    private static Scanner in;
+    // Metodo principale di avvio
+    public static void main(String[] args){
         int scelta;
-        
+        a = new Azienda("Pippo s.p.a.");
+        a.addLinguaggio("C++");
+        a.addLinguaggio("Java");
+        a.addLinguaggio("Javascript");
+        a.addLinguaggio("PHP");
         do{
             scelta = menu();
-            
-            switch (scelta) {
-                case 1:
-                    aggiungiDipendente();
-                    break;
-                case 2:
-                    assegnaManager();
-                    break;
-                case 3:
-                    modificaPercentualiContributo();
-                    break;
-                case 4:
-                    calcolaStipendio();
-                    break;
-                case 5:
-                    aggiornaListaLinguaggi();
-                    break;
-                case 0:
-                    System.out.println("Uscita dal programma in corso...");
-                default:
-                    System.out.println("Scelta non valida!");
+            switch(scelta){
+                case 1 -> {addDipendente();}
+                case 2 -> {assignSviluppatoreToManager();}
+                case 3 -> {setParametri();}
+                case 4 -> {stipendio();}
+                case 0 -> {System.out.println("│ Chiusura programma ... OK");}
+                default -> {System.out.println("│ ATTENZIONE: scelta errata!!!");}
             }
-            
-        }while(scelta != 0);
-    }
-    
+        }while(scelta!=0);
+    } 
+    // Metodo che visualizza il menu e restituisce la scelta dell'utente
     public static int menu(){
         int scelta;
-        Scanner in = new Scanner(System.in);
-        
-        System.out.println("Menù");
-        System.out.println("1) Aggiungi dipendente");
-        System.out.println("2) Assegna un manager ad un programmatore");
-        System.out.println("3) Modifica percentuali ed il contributo");
-        System.out.println("4) Calcola stipendio di un dipendente");
-        System.out.println("5) Aggiorna lista linguaggi programmazione");
-        System.out.println("0) Esci");
-        System.out.print("Scelta: ");
-        
-        scelta = in.nextInt();
-        
+        in = new Scanner(System.in);
+        System.out.println("┌────────────────────────────────────────────────┐");
+        System.out.println("│         GESTIONE DIPENDENTI           │");
+        System.out.println("├────────────────────────────────────────────────┤");
+        System.out.println("│ 1) Inserisci dipendente               │");
+        System.out.println("│ 2) Assegna sviluppatore a manager     │");
+        System.out.println("│ 3) Modifica parametri di anzianità    │");
+        System.out.println("│ 4) Calcola stipendio                  │");
+        System.out.println("├────────────────────────────────────────────────┤");
+        System.out.println("│ 0) Uscita                             │");
+        System.out.println("├────────────────────────────────────────────────┘");
+        System.out.print("│ Scelta: ");
+        try{
+            scelta = Integer.parseInt(in.nextLine());
+        }
+        catch(NumberFormatException e){
+            scelta=-1;
+        }
         return scelta;
     }
-    
-    private static void aggiungiDipendente(){
-        String codice, nome, cognome, tipo, linguaggio;
-        LocalDate dataAssunzione;
-        double stipendioBase;
-        Programmatore prog = null;
-        Scanner in = new Scanner(System.in);
-        
-        System.out.print("Codice: ");
-        codice = in.nextLine();
-        System.out.print("Nome: ");
-        nome = in.nextLine();
-        System.out.print("Cognome: ");
-        cognome = in.nextLine();
-        System.out.print("Data assunzione (AAAA-MM-GG): ");
-        dataAssunzione = LocalDate.parse(in.nextLine());
-        System.out.print("Stipendio iniziale: ");
-        stipendioBase = in.nextDouble();
-        in.nextLine();
-        System.out.print("Manager o Programmatore: ");
-        tipo = in.nextLine();
-        
-        if (tipo.equals("Manager")){
-            dipendenti.add(new Manager(codice, nome, cognome, dataAssunzione, stipendioBase));
-        }else if (tipo.equals("Programmatore")){
-            prog = new Programmatore(codice, nome, cognome, dataAssunzione, stipendioBase);
-            dipendenti.add(prog);
-            
-            do{
-                prog.stampaListaLinguaggi();
-                System.out.print("Linguagio di programmazione: ");
-                linguaggio = in.nextLine();
-                if (prog.esisteLinguaggio(linguaggio)){
-                    prog.aggiungiLinguaggio(linguaggio);
-                }else{
-                    System.out.println("Linguaggio non trovato!");
-                }
-                System.out.print("Vuoi inserire un altro linguaggio di programmazione? (Si/No): ");
-            }while (in.nextLine().equals("Si"));
-        }else{
-            System.out.println("Opzione non valida!");
-        }
-        
-        System.out.println("Dipendente aggiunto!");
-    }
-    
-    private static void assegnaManager(){
-        Scanner in = new Scanner(System.in);
-        String codiceProgrammatore, codiceManager;
-        Manager man = null;
-        Programmatore prog = null;
-        
-        System.out.print("Codice manager: ");
-        codiceManager = in.nextLine();
-        
-        for (int i = 0; i < dipendenti.size(); i++){
-            if (dipendenti.get(i).getCodice().equals(codiceManager)){
-                man = (Manager) dipendenti.get(i);
-            }
-        }
-        
-        System.out.print("Codice programmatore: ");
-        codiceProgrammatore = in.nextLine();
-        
-        for (int i = 0; i < dipendenti.size(); i++){
-            if (dipendenti.get(i).getCodice().equals(codiceProgrammatore)){
-                prog = (Programmatore) dipendenti.get(i);
-            }
-        }
-        
-        if (man != null && prog != null){
-            man.aggiungiProgrammatore(prog);
-            System.out.println("Programmatore asssegnato con successo!");
-        }else{
-            System.out.println("Nessun programmatore/manager trovato!");
-        }
-    }
-    
-    private static void modificaPercentualiContributo(){
-        Scanner in = new Scanner(System.in);
-        Programmatore prog = null;
-        Manager man = null;
-        String codiceProgrammatore, codiceManager;
-        
-        System.out.print("Codice programmatore (vuoto se non si vuole modificare): ");
-        codiceProgrammatore = in.nextLine();
-        System.out.print("Codice manager (vuoto se non si vuole modificare): ");
-        codiceManager = in.nextLine();
-        
-        for (int i = 0; i < dipendenti.size(); i++){
-            if (dipendenti.get(i).getCodice().equals(codiceManager)){
-                man = (Manager) dipendenti.get(i);
-            } else if (dipendenti.get(i).getCodice().equals(codiceProgrammatore)){
-                prog = (Programmatore) dipendenti.get(i);
-            }
-        }
-        
-        if (man != null){
-            System.out.print("Percentuale maggioramento (es: 2): ");
-            man.setPercentuale(in.nextDouble() / 100);
-            
-            System.out.print("Contributo (es: 15): ");
-            man.setContributo(in.nextInt());
-        } else{
-            System.out.println("Manager non trovato!");
-        }
-        
-        if (prog != null){
-            System.out.println("Percentuale maggioramento (es: 2): ");
-            prog.setPercentuale(in.nextDouble() / 100);
-        } else{
-            System.out.println("Programmatore non trovato!");
-        }
-    }
-    
-    private static void calcolaStipendio(){
-        Scanner in = new Scanner(System.in);
+    // Metodo di aggiunta di un nuovo dipendente
+    public static void addDipendente(){
+        char tipologia;
         String codice;
-        Dipendente dip = null;
-        
-        System.out.print("Codice: ");
-        codice = in.nextLine();
-        
-        for (int i = 0; i < dipendenti.size(); i++){
-            if (dipendenti.get(i).getCodice().equals(codice)){
-                dip = dipendenti.get(i);
+        String nome;
+        String cognome;
+        LocalDate dataAssunzione;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        double stipendioBase;
+        do{
+            System.out.print("│ Scegli la tipologia di dipendente (M = Manager, S = Sviluppatore): ");
+            try{
+                tipologia = in.nextLine().charAt(0);
             }
+            catch(Exception e){
+                tipologia = ' ';
+            }
+        }while(tipologia!='M' && tipologia!='S');
+        System.out.print("│ Codice del dipendente: ");
+        codice = a.nuovoCodice(tipologia);
+        System.out.println(codice);
+        System.out.print("│ Nome del dipendente: ");
+        nome = in.nextLine();
+        System.out.print("│ Cognome del dipendente: ");
+        cognome = in.nextLine();
+        do{
+            System.out.print("│ Data di assunzione (gg/mm/aaaa): ");
+            try{
+                dataAssunzione = LocalDate.parse(in.nextLine(), formatter);
+            }
+            catch(DateTimeParseException e){
+                dataAssunzione=null;
+            }
+        }while(dataAssunzione==null);
+        do{
+            System.out.print("│ Stipendio base: ");
+            try{
+                stipendioBase = Double.parseDouble(in.nextLine());
+            }
+            catch(NumberFormatException e){
+                stipendioBase=0;
+            }            
+        }while(stipendioBase==0);
+        // Creazione dipendente
+        if(tipologia=='S'){
+            Sviluppatore s;
+            s = new Sviluppatore(codice, nome, cognome, dataAssunzione, stipendioBase);
+            a.addDipendente(s);
+            System.out.println("│ Elenco dei linguaggi disponibili: ");
+            for(int i=0;i<a.getListaLinguaggi().size();i++){
+                System.out.println("│ " + i + ") " + a.getListaLinguaggi().get(i));
+            }
+            int scelta;
+            boolean continua=false;
+            do{
+                do{
+                    System.out.print("│ Scegli l'indice per un linguaggio: ");
+                    try{
+                        scelta = Integer.parseInt(in.nextLine());
+                    }
+                    catch(NumberFormatException e){
+                        scelta=-1;
+                    }
+                }while(scelta<0 || scelta>a.getListaLinguaggi().size()-1);
+                s.addLinguaggio(a.getListaLinguaggi().get(scelta));
+                System.out.print("│ Scegli un altro linguaggio (s/n)? ");
+                if(in.nextLine().equals("s"))
+                    continua = true;
+                else
+                    continua = false;
+            }while(continua);
         }
-        
-        if (dip != null){
-            System.out.println("Stipendio attuale di " + dip.getNome() + " " + dip.getCognome());
-            System.out.println("Codice: " + dip.getCodice() + "\nData assunzione: " + dip.getDataAssunzione());
-            System.out.println("Stipendio base: " + dip.getStipendioBase());
-            System.out.println("Stipendio attuale: " + dip.calcolaStipendio());
-        }else{
-            System.out.println("Dipendente non trovato!");
+        else if(tipologia=='M'){
+            Manager m;
+            m = new Manager(codice, nome, cognome, dataAssunzione, stipendioBase);
+            a.addDipendente(m);
         }
     }
-    
-    private static void aggiornaListaLinguaggi(){
-        Scanner in = new Scanner(System.in);
-        String linguaggio;
-        Programmatore prog = null;
-        System.out.print("Linguaggio da aggiungere: ");
-        linguaggio = in.nextLine();
-        
-        Programmatore.aggiornaLinguaggi(linguaggio);
+    // Metodo che assegna ad un Manager uno Sviluppatore
+    public static void assignSviluppatoreToManager(){
+        Manager m = null;
+        Sviluppatore s = null;
+        Dipendente d = null;
+        String codice;
+        if(a.thereIsManager() && a.thereIsSviluppatore()){
+            // Selezione del manager
+            Iterator<Dipendente> it;
+            it = a.getListaDipendenti().iterator();
+            System.out.println("| Elenco dei manager: ");
+            while(it.hasNext()){
+                d = it.next();
+                if(d instanceof Manager){
+                    System.out.println("| " + d.toString());
+                }
+            }
+            System.out.print("| Scegli il codice del manager: ");
+            codice = in.nextLine();
+            it = a.getListaDipendenti().iterator();  
+            while(it.hasNext()){
+                d = it.next();
+                if(d instanceof Manager && d.getCodice().equals(codice)){
+                    m = (Manager)d;
+                }
+            }   
+            if (m!=null){
+                it = a.getListaDipendenti().iterator();
+                System.out.println("| Elenco degli sviluppatori: ");
+                while(it.hasNext()){
+                    d = it.next();
+                    if(d instanceof Sviluppatore){
+                        System.out.println("| " + d.toString());
+                    }
+                }
+                System.out.print("| Scegli il codice dello sviluppatore: ");
+                codice = in.nextLine();
+                it = a.getListaDipendenti().iterator();  
+                while(it.hasNext()){
+                    d = it.next();
+                    if(d instanceof Sviluppatore && d.getCodice().equals(codice)){
+                        s = (Sviluppatore)d;
+                    }
+                }
+                if (s!=null){
+                    m.addDiretto(s);
+                }
+                else{
+                    System.out.println("│ ATTENZIONE: codice dello sviluppatore errato!!!");
+                }
+            }
+            else{
+                System.out.println("│ ATTENZIONE: codice del manager errato!!!");
+            }
+        }
+        else{
+            System.out.println("| ATTENZIONE: non ci sono ancora manager o sviluppatori inseriti!!!");
+        }
+    }
+    // Metodo che modifica gli attributi statici per il calcolo degli stipendi
+    public static void setParametri(){
+        boolean valid;
+        System.out.println("│ I parametri attualmente utilizzati per il calcolo degli stipendi sono: ");
+        System.out.println("│ SVILUPPATORI: +" + Sviluppatore.getPercentualeAnzinita() + "% ogni 5 anni");
+        System.out.println("│ MANAGER: +" + Manager.getPercentualeAnzinita() + "% ogni 4 anni + contributo di " + Manager.getContributoSviluppatore() + "€ per ogni sviluppatore diretto");
+        do{
+            valid = true;
+            System.out.print("│ Inserisci la nuova percentuale per gli sviluppatori: ");
+            try{
+                Sviluppatore.setPercentualeAnzinita(Double.parseDouble(in.nextLine()));
+            }
+            catch(Exception e){
+                valid = false;
+            }
+        }while(!valid);
+        do{
+            valid = true;
+            System.out.print("│ Inserisci la nuova percentuale per i manager: ");
+            try{
+                Manager.setPercentualeAnzinita(Double.parseDouble(in.nextLine()));
+            }
+            catch(Exception e){
+                valid = false;
+            }
+        }while(!valid);
+        do{
+            valid = true;
+            System.out.print("│ Inserisci il nuovo contributo per i manager: ");
+            try{
+                Manager.setContributoSviluppatore(Double.parseDouble(in.nextLine()));
+            }
+            catch(Exception e){
+                valid = false;
+            }
+        }while(!valid);
+    }   
+    // Metodo di calcolo dello stipendio
+    public static void stipendio(){
+        if(a.thereIsManager() || a.thereIsSviluppatore()){
+            boolean trovato = false;
+            System.out.println("| Elenco dei dipendenti inseriti:");
+            Iterator<Dipendente> it;
+            Dipendente d;
+            it = a.getListaDipendenti().iterator();  
+            while(it.hasNext()){
+                d = it.next();
+                System.out.println("| " + d.toString());
+            }
+            System.out.print("| Scegli il codice del dipendente per calcolare lo stipendio: ");
+            String codice = in.nextLine();
+            // Per tornare all'inizio, ricreo un nuovo iteratore
+            it = a.getListaDipendenti().iterator(); 
+            while(it.hasNext()){
+                d = it.next();
+                if(d.getCodice().equals(codice)){
+                    trovato = true;
+                    System.out.println("| Stipendio: " + d.stipendio() + " €");
+                }
+            }
+            if(!trovato){
+                System.out.println("| ATTENZIONE: codice errato!!!");
+            }
+        }
+        else{
+            System.out.println("| ATTENZIONE: non ci sono ancora dipendenti inseriti!!!");
+        }
     }
 }
